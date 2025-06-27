@@ -1,18 +1,19 @@
-import React from "react";
+import React, { useContext } from "react";
 import { motion } from "framer-motion";
 import { useFarms } from "@/hooks/useFarms";
+import { AuthContext } from "@/App";
 import ApperIcon from "@/components/ApperIcon";
 import Select from "@/components/atoms/Select";
 import Button from "@/components/atoms/Button";
 
-const Header = ({ onMenuClick, selectedFarmId, onFarmChange, onLogout }) => {
-  const { farms } = useFarms();
+const Header = ({ onMenuClick, selectedFarmId, onFarmChange }) => {
+const { farms } = useFarms();
+  const { logout } = useContext(AuthContext);
 
   const farmOptions = farms.map(farm => ({
     value: farm.id,
     label: farm.name
   }));
-
   return (
     <motion.header 
       className="bg-white shadow-sm border-b border-gray-200 px-4 py-4 lg:px-6"
@@ -64,7 +65,7 @@ const Header = ({ onMenuClick, selectedFarmId, onFarmChange, onLogout }) => {
             variant="ghost"
             size="sm"
             icon="LogOut"
-            onClick={onLogout}
+            onClick={logout}
             className="text-red-600 hover:text-red-700 hover:bg-red-50"
           >
             <span className="hidden sm:inline ml-2">Logout</span>

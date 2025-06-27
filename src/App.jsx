@@ -151,13 +151,12 @@ function AppContent() {
           onClose={() => setSidebarOpen(false)} 
         />
         
-        <div className="flex-1 flex flex-col lg:ml-64">
+<div className="flex-1 flex flex-col lg:ml-64">
           <Header 
             onMenuClick={() => setSidebarOpen(true)}
             selectedFarmId={selectedFarmId}
             onFarmChange={setSelectedFarmId}
           />
-          
           <motion.main 
             className="flex-1 p-4 lg:p-6"
             initial={{ opacity: 0, y: 20 }}
