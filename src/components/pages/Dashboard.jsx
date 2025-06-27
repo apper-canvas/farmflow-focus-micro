@@ -10,8 +10,8 @@ import { useFarms } from '@/hooks/useFarms';
 import { useCrops } from '@/hooks/useCrops';
 import { useTasks } from '@/hooks/useTasks';
 import { useExpenses } from '@/hooks/useExpenses';
+import { useQuickActions } from '@/hooks/useQuickActions';
 import { toast } from 'react-toastify';
-
 const Dashboard = ({ selectedFarmId }) => {
   const { farms } = useFarms();
   const { crops } = useCrops();
@@ -45,11 +45,29 @@ const Dashboard = ({ selectedFarmId }) => {
   const recentExpenses = farmExpenses
     .sort((a, b) => new Date(b.date) - new Date(a.date))
     .slice(0, 3);
+const { quickActions, loading: quickActionsLoading, executeAction } = useQuickActions();
 
-  const handleQuickAction = (action) => {
-    toast.info(`${action} feature coming soon!`);
+  const handleQuickAction = async (action) => {
+    try {
+      const result = await executeAction(action);
+      
+      // Execute based on action type
+      switch (action.action_type) {
+        case 'create_task':
+          toast.success('Redirecting to create task...');
+          // Could navigate to task creation page with pre-filled data
+          break;
+        case 'log_expense':
+          toast.success('Redirecting to log expense...');
+          // Could navigate to expense creation page with pre-filled data
+          break;
+        default:
+          toast.info(`Executed: ${action.Name}`);
+      }
+    } catch (error) {
+      toast.error('Failed to execute action');
+    }
   };
-
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -204,44 +222,67 @@ const Dashboard = ({ selectedFarmId }) => {
         </Card>
       </motion.div>
 
-      {/* Quick Actions */}
+{/* Quick Actions */}
       <motion.div variants={itemVariants}>
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <QuickActionCard
-            title="Add Crop"
-            description="Plant new crops and track their growth"
-            icon="Sprout"
-            buttonText="Plant Crop"
-            onAction={() => handleQuickAction('Add Crop')}
-            color="forest"
-          />
-          <QuickActionCard
-            title="Create Task"
-            description="Schedule farming activities and reminders"
-            icon="Plus"
-            buttonText="Add Task"
-            onAction={() => handleQuickAction('Create Task')}
-            color="amber"
-          />
-          <QuickActionCard
-            title="Log Expense"
-            description="Record farm-related expenses and costs"
-            icon="Receipt"
-            buttonText="Add Expense"
-            onAction={() => handleQuickAction('Log Expense')}
-            color="earth"
-          />
-          <QuickActionCard
-            title="Check Weather"
-            description="View detailed weather forecast"
-            icon="Cloud"
-            buttonText="View Weather"
-            onAction={() => handleQuickAction('Check Weather')}
-            variant="outline"
-            color="forest"
-          />
-        </div>
+        
+        {quickActionsLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-gray-200 animate-pulse rounded-lg h-48"></div>
+            ))}
+          </div>
+        ) : quickActions.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {quickActions.map((action) => (
+              <QuickActionCard
+                key={action.Id}
+                title={action.Name}
+                description={action.description}
+                icon="Zap"
+                buttonText="Execute"
+                onAction={() => handleQuickAction(action)}
+                color="forest"
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <QuickActionCard
+              title="Add Crop"
+              description="Plant new crops and track their growth"
+              icon="Sprout"
+              buttonText="Plant Crop"
+              onAction={() => toast.info('Add Crop feature coming soon!')}
+              color="forest"
+            />
+            <QuickActionCard
+              title="Create Task"
+              description="Schedule farming activities and reminders"
+              icon="Plus"
+              buttonText="Add Task"
+              onAction={() => toast.info('Create Task feature coming soon!')}
+              color="amber"
+            />
+            <QuickActionCard
+              title="Log Expense"
+              description="Record farm-related expenses and costs"
+              icon="Receipt"
+              buttonText="Add Expense"
+              onAction={() => toast.info('Log Expense feature coming soon!')}
+              color="earth"
+            />
+            <QuickActionCard
+              title="Check Weather"
+              description="View detailed weather forecast"
+              icon="Cloud"
+              buttonText="View Weather"
+              onAction={() => toast.info('Check Weather feature coming soon!')}
+              variant="outline"
+              color="forest"
+            />
+          </div>
+        )}
       </motion.div>
     </motion.div>
   );
