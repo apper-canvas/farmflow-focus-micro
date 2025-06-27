@@ -11,10 +11,10 @@ import ApperIcon from '@/components/ApperIcon';
 import Loading from '@/components/ui/Loading';
 import Error from '@/components/ui/Error';
 import Empty from '@/components/ui/Empty';
+import ExpenseCharts from '@/components/organisms/ExpenseCharts';
 import { useExpenses } from '@/hooks/useExpenses';
 import { useFarms } from '@/hooks/useFarms';
 import { toast } from 'react-toastify';
-
 const Expenses = ({ selectedFarmId }) => {
   const { expenses, loading, error, addExpense, updateExpense, deleteExpense, fetchExpenses } = useExpenses();
   const { farms } = useFarms();
@@ -169,7 +169,7 @@ const Expenses = ({ selectedFarmId }) => {
   if (loading) return <Loading type="table" />;
   if (error) return <Error message={error} onRetry={fetchExpenses} />;
 
-  return (
+return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -192,6 +192,14 @@ const Expenses = ({ selectedFarmId }) => {
           Add Expense
         </Button>
       </div>
+
+      {/* Spending Analytics Charts */}
+      {farmExpenses.length > 0 && (
+        <ExpenseCharts 
+          expenses={farmExpenses} 
+          loading={loading}
+        />
+      )}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -237,7 +245,6 @@ const Expenses = ({ selectedFarmId }) => {
           </div>
         </Card>
       )}
-
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <SearchBar
