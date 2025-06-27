@@ -374,8 +374,8 @@ const Tasks = ({ selectedFarmId }) => {
                         
                         <div className="flex items-center justify-between">
                           <div className="flex items-center text-sm text-gray-500">
-                            <ApperIcon name="Calendar" className="w-4 h-4 mr-1" />
-                            Due: {format(new Date(task.dueDate), 'MMM dd, yyyy')}
+<ApperIcon name="Calendar" className="w-4 h-4 mr-1" />
+                            Due: {format(new Date(task.due_date || task.dueDate), 'MMM dd, yyyy')}
                           </div>
                           
                           <div className="flex space-x-1">

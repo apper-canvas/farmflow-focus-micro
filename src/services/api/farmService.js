@@ -1,53 +1,192 @@
-import { farmData } from '@/services/mockData/farms';
-
-let farms = [...farmData];
-
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+import { toast } from 'react-toastify';
 
 export const farmService = {
   async getAll() {
-    await delay(300);
-    return [...farms];
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "location" } },
+          { field: { Name: "size" } },
+          { field: { Name: "size_unit" } },
+          { field: { Name: "Tags" } }
+        ]
+      };
+
+      const response = await apperClient.fetchRecords('farm', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      console.error("Error fetching farms:", error);
+      throw error;
+    }
   },
 
   async getById(id) {
-    await delay(200);
-    const farm = farms.find(f => f.id === id);
-    if (!farm) throw new Error('Farm not found');
-    return { ...farm };
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "location" } },
+          { field: { Name: "size" } },
+          { field: { Name: "size_unit" } }
+        ]
+      };
+
+      const response = await apperClient.getRecordById('farm', parseInt(id), params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching farm with ID ${id}:`, error);
+      throw error;
+    }
   },
 
   async create(farmData) {
-    await delay(400);
-    const maxId = Math.max(...farms.map(f => parseInt(f.id)), 0);
-    const newFarm = {
-      id: (maxId + 1).toString(),
-      ...farmData,
-      size: parseFloat(farmData.size)
-    };
-    farms.push(newFarm);
-    return { ...newFarm };
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        records: [{
+          Name: farmData.name,
+          location: farmData.location,
+          size: parseFloat(farmData.size),
+          size_unit: farmData.sizeUnit
+        }]
+      };
+
+      const response = await apperClient.createRecord('farm', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const failedRecords = response.results.filter(result => !result.success);
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          failedRecords.forEach(record => {
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        const successfulRecords = response.results.filter(result => result.success);
+        return successfulRecords[0]?.data;
+      }
+    } catch (error) {
+      console.error("Error creating farm:", error);
+      throw error;
+    }
   },
 
   async update(id, farmData) {
-    await delay(350);
-    const index = farms.findIndex(f => f.id === id);
-    if (index === -1) throw new Error('Farm not found');
-    
-    const updatedFarm = {
-      ...farms[index],
-      ...farmData,
-      size: parseFloat(farmData.size)
-    };
-    farms[index] = updatedFarm;
-    return { ...updatedFarm };
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        records: [{
+          Id: parseInt(id),
+          Name: farmData.name,
+          location: farmData.location,
+          size: parseFloat(farmData.size),
+          size_unit: farmData.sizeUnit
+        }]
+      };
+
+      const response = await apperClient.updateRecord('farm', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const failedRecords = response.results.filter(result => !result.success);
+        if (failedRecords.length > 0) {
+          console.error(`Failed to update ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          failedRecords.forEach(record => {
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        const successfulRecords = response.results.filter(result => result.success);
+        return successfulRecords[0]?.data;
+      }
+    } catch (error) {
+      console.error("Error updating farm:", error);
+      throw error;
+    }
   },
 
   async delete(id) {
-    await delay(250);
-    const index = farms.findIndex(f => f.id === id);
-    if (index === -1) throw new Error('Farm not found');
-    farms.splice(index, 1);
-    return true;
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        RecordIds: [parseInt(id)]
+      };
+
+      const response = await apperClient.deleteRecord('farm', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const failedDeletions = response.results.filter(result => !result.success);
+        if (failedDeletions.length > 0) {
+          console.error(`Failed to delete ${failedDeletions.length} records:${JSON.stringify(failedDeletions)}`);
+          failedDeletions.forEach(record => {
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        const successfulDeletions = response.results.filter(result => result.success);
+        return successfulDeletions.length > 0;
+      }
+    } catch (error) {
+      console.error("Error deleting farm:", error);
+      throw error;
+    }
   }
 };

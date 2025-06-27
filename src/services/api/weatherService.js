@@ -1,17 +1,81 @@
-import { weatherData } from '@/services/mockData/weather';
-
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+import { toast } from 'react-toastify';
 
 export const weatherService = {
   async getAll() {
-    await delay(400);
-    return [...weatherData];
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "date" } },
+          { field: { Name: "temp_high" } },
+          { field: { Name: "temp_low" } },
+          { field: { Name: "conditions" } },
+          { field: { Name: "precipitation" } }
+        ]
+      };
+
+      const response = await apperClient.fetchRecords('weather', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      console.error("Error fetching weather data:", error);
+      throw error;
+    }
   },
 
   async getById(date) {
-    await delay(200);
-    const weather = weatherData.find(w => w.date === date);
-    if (!weather) throw new Error('Weather data not found');
-    return { ...weather };
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "date" } },
+          { field: { Name: "temp_high" } },
+          { field: { Name: "temp_low" } },
+          { field: { Name: "conditions" } },
+          { field: { Name: "precipitation" } }
+        ],
+        where: [
+          {
+            FieldName: "date",
+            Operator: "EqualTo",
+            Values: [date]
+          }
+        ]
+      };
+
+      const response = await apperClient.fetchRecords('weather', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (!response.data || response.data.length === 0) {
+        throw new Error('Weather data not found');
+      }
+
+      return response.data[0];
+    } catch (error) {
+      console.error(`Error fetching weather data for date ${date}:`, error);
+      throw error;
+    }
   }
 };

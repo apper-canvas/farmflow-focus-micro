@@ -361,8 +361,8 @@ const Expenses = ({ selectedFarmId }) => {
                     <td className="py-3 px-4 text-sm text-gray-900">
                       {expense.description}
                     </td>
-                    <td className="py-3 px-4 text-right text-sm font-semibold text-gray-900">
-                      ${expense.amount.toFixed(2)}
+<td className="py-3 px-4 text-right text-sm font-semibold text-gray-900">
+                      ${(expense.amount || 0).toFixed(2)}
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex justify-end space-x-1">

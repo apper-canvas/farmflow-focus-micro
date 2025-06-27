@@ -1,11 +1,11 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import Button from '@/components/atoms/Button';
-import Select from '@/components/atoms/Select';
-import ApperIcon from '@/components/ApperIcon';
-import { useFarms } from '@/hooks/useFarms';
+import React from "react";
+import { motion } from "framer-motion";
+import { useFarms } from "@/hooks/useFarms";
+import ApperIcon from "@/components/ApperIcon";
+import Select from "@/components/atoms/Select";
+import Button from "@/components/atoms/Button";
 
-const Header = ({ onMenuClick, selectedFarmId, onFarmChange }) => {
+const Header = ({ onMenuClick, selectedFarmId, onFarmChange, onLogout }) => {
   const { farms } = useFarms();
 
   const farmOptions = farms.map(farm => ({
@@ -45,7 +45,7 @@ const Header = ({ onMenuClick, selectedFarmId, onFarmChange }) => {
           </div>
         </div>
 
-        <div className="flex items-center space-x-4">
+<div className="flex items-center space-x-4">
           <div className="w-48 hidden md:block">
             <Select
               value={selectedFarmId}
@@ -59,6 +59,16 @@ const Header = ({ onMenuClick, selectedFarmId, onFarmChange }) => {
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <span className="text-sm text-gray-600 hidden sm:inline">Synced</span>
           </div>
+          
+<Button
+            variant="ghost"
+            size="sm"
+            icon="LogOut"
+            onClick={onLogout}
+            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+          >
+            <span className="hidden sm:inline ml-2">Logout</span>
+          </Button>
         </div>
       </div>
     </motion.header>

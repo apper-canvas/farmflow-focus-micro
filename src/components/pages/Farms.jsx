@@ -237,8 +237,8 @@ const Farms = () => {
                       <ApperIcon name="Maximize" className="w-4 h-4 text-gray-500 mr-2" />
                       <span className="text-sm text-gray-700">Size</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-900">
-                      {farm.size} {farm.sizeUnit}
+<span className="text-sm font-medium text-gray-900">
+                      {farm.size} {farm.size_unit || farm.sizeUnit}
                     </span>
                   </div>
                   

@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { format } from 'date-fns';
-import Card from '@/components/atoms/Card';
-import Button from '@/components/atoms/Button';
-import Badge from '@/components/atoms/Badge';
-import FormField from '@/components/molecules/FormField';
-import SearchBar from '@/components/molecules/SearchBar';
-import ApperIcon from '@/components/ApperIcon';
-import Loading from '@/components/ui/Loading';
-import Error from '@/components/ui/Error';
-import Empty from '@/components/ui/Empty';
-import { useCrops } from '@/hooks/useCrops';
-import { useFarms } from '@/hooks/useFarms';
-import { toast } from 'react-toastify';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { format } from "date-fns";
+import { useCrops } from "@/hooks/useCrops";
+import { useFarms } from "@/hooks/useFarms";
+import { toast } from "react-toastify";
+import { cropData } from "@/services/mockData/crops";
+import ApperIcon from "@/components/ApperIcon";
+import FormField from "@/components/molecules/FormField";
+import SearchBar from "@/components/molecules/SearchBar";
+import Empty from "@/components/ui/Empty";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
+import Card from "@/components/atoms/Card";
+import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
 
 const Crops = ({ selectedFarmId }) => {
   const { crops, loading, error, addCrop, updateCrop, deleteCrop, fetchCrops } = useCrops();
@@ -345,11 +346,11 @@ const Crops = ({ selectedFarmId }) => {
                     </div>
                   )}
                   
-                  <div className="pt-3 border-t border-gray-100">
+<div className="pt-3 border-t border-gray-100">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-600">Days since planting</span>
                       <span className="text-sm font-medium text-gray-900">
-                        {Math.floor((new Date() - new Date(crop.plantingDate)) / (1000 * 60 * 60 * 24))}
+                        {Math.floor((new Date() - new Date(crop.planting_date || crop.plantingDate)) / (1000 * 60 * 60 * 24))}
                       </span>
                     </div>
                   </div>
